@@ -9,13 +9,12 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.createTable('investments', {
-      investment_id: Sequelize.DataTypes.UUID,
-      investor_id: Sequelize.DataTypes.UUID,
-      investor_amount: Sequelize.DataTypes.DECIMAL(30,2),
-      investment_state: Sequelize.DataTypes.BOOLEAN,
+    await queryInterface.createTable('payment_schedule_loan', {
+      ps_id: Sequelize.DataTypes.INTEGER,
       loan_id: Sequelize.DataTypes.UUID,
-      investment_strategy: Sequelize.DataTypes.DECIMAL(5,2),
+      ps_date_pay: Sequelize.DataTypes.DATEONLY,
+      ps_amount: Sequelize.DataTypes.DECIMAL(30,2),
+      ps_income: Sequelize.DataTypes.DECIMAL(30,2),
     });
   },
 
