@@ -4,6 +4,11 @@ import { SequelizeModule } from '@nestjs/sequelize';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { LoansModule } from './loans/loans.module';
+import { Loan } from './loans/loan.model';
+import { Investment } from './investments/investment.model';
+import { PaymentScheduleInvestor } from './payment_schedule_investors/payment-schedule-investor.model';
+import { PaymentScheduleLoan } from './payment_schedule_loans/payment-schedule-loan.model';
 
 @Module({
   imports: [
@@ -17,8 +22,9 @@ import { AppService } from './app.service';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      models: [],
+      models: [Loan, Investment, PaymentScheduleInvestor, PaymentScheduleLoan],
     }),
+    LoansModule,
   ],
   controllers: [AppController],
   providers: [AppService],
