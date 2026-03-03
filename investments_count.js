@@ -22,7 +22,7 @@ try {
 
     for (let investment of project.investors) {
       const state = investment.state === 'confirmed'
-      console.log(`INSERT INTO investments(investor_id, investment_amount, investment_state, loan_id) VALUES ('${ investment.investorId }', ${ investment.investmentAmount }, ${ state }, '${ projectUuid }');`);
+      console.log(`INSERT INTO investments(investor_id, investment_amount, investment_state, loan_id, investment_strategy) VALUES ('${ investment.investorId }', ${ investment.investmentAmount }, ${ state }, '${ projectUuid }', ${ investment.investorStrategyRate });`);
     }
   }
 } catch (error) {
