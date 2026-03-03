@@ -9,6 +9,7 @@ import { PaymentScheduleInvestor } from '../payment_schedule_investors/payment-s
 @Injectable()
 export class LoansService {
     constructor(
+        // private sequelize: Sequelize,
         @InjectModel(Loan)
         private readonly loanModel: typeof Loan,
         @InjectModel(Investment)
@@ -170,6 +171,9 @@ export class LoansService {
             status: false,
         };
         
+        // try {
+        //     await this.sequelize.transaction(async t => {
+        
         const loan = await this.get(loanId);
         console.log('loan');
         console.log(loan?.get('loan_sum'));
@@ -264,6 +268,11 @@ export class LoansService {
         }
         
         result.status = true;
+        // });
+        // }
+        // catch(err) {
+        //
+        // }
         
         return result;
     }
