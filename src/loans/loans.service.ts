@@ -83,10 +83,13 @@ export class LoansService {
             
             // сколько периодов возврата
             const timesCount = Math.ceil(loanDays / loanPayPeriod);
+            
             // сколько останется дней в последнем периоде возврата
             const daysLeft = loanDays % loanPayPeriod;
+            
             // сколько тело займа возвращается в период
             const loanSumPart = parseFloat((Math.round(loanSum) / timesCount).toFixed(2));
+            
             // сколько тело займа останется на последний период (разница из-за делений)
             const loanSumPartLeft = parseFloat((loanSum - loanSumPart * timesCount).toFixed(2));
             
@@ -106,24 +109,26 @@ export class LoansService {
             for (const invest of allInvestments) {
                 // console.log(invest.get('investor_id'));
                 // console.log(invest.get('total_amount'));
+                
                 const investorTotalAmount = invest.get('total_amount');
                 const investmentStrategy = invest.get('investment_strategy');
                 console.log('investorTotalAmount', investorTotalAmount);
                 
                 const psiDate = new Date(dayAfterIssue.getTime());
-                const investorLoanPart = parseFloat((Math.round(investorTotalAmount) / timesCount).toFixed(2)); // сколько тело займа возвращается в период
-                const loanSumPartLeft = parseFloat((investorTotalAmount - investorLoanPart * timesCount).toFixed(2)); // сколько тело займа останется на последний период (разница из-за делений)
+                
+                // сколько тело займа возвращается в период
+                const investorLoanPart = parseFloat((Math.round(investorTotalAmount) / timesCount).toFixed(2));
+                
+                // сколько тело займа останется на последний период (разница из-за делений)
+                const loanSumPartLeft = parseFloat((investorTotalAmount - investorLoanPart * timesCount).toFixed(2));
                 
                 // график для инвестора
                 for (let period = 0; period < timesCount; period++) {
                     let psi_amount = investorLoanPart;
-                    // @ts-ignore
                     let psi_income = (loanRate / 365) * loanPayPeriod * investorTotalAmount;
                     let psi_income_strategy = 0;
                     
-                    // @ts-ignore
                     if (investmentStrategy > loanRate) {
-                        // @ts-ignore
                         psi_income_strategy = ((investmentStrategy - loanRate) / 365) * loanPayPeriod * investorTotalAmount;
                     }
                     
@@ -136,7 +141,6 @@ export class LoansService {
                     console.log('psi_amount', psi_amount);
                     console.log('psi_income', psi_income);
                     
-                    // @ts-ignore
                     await this.paymentScheduleInvestorModel.create({
                         loan_id:             loanId,
                         investor_id:         invest.get('investor_id'),
@@ -146,10 +150,10 @@ export class LoansService {
                         psi_income_strategy: psi_income_strategy,
                     });
                     
-                    // @ts-ignore
-                    if (!psLoanSums[period]) psLoanSums[period] = { amount: 0, income: 0, date: new Date(psiDate.getTime()) };
+                    if (!psLoanSums[period]) {
+                        psLoanSums[period] = { amount: 0, income: 0, date: new Date(psiDate.getTime()) };
+                    }
                     
-                    // @ts-ignore
                     psiDate.setDate(psiDate.getDate() + loanPayPeriod); // увеличиваем дату периода для инвестора
                     
                     psLoanSums[period].income += psi_income;
