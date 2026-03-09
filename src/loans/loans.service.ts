@@ -124,7 +124,7 @@ export class LoansService {
             }
             
             for (const invest of allInvestments) {
-                // console.log(invest.get('investor_id'));
+                console.log('investor: ', invest.get('investor_id'));
                 // console.log(invest.get('total_amount'));
                 
                 const investorTotalAmount = invest.get('total_amount');
@@ -132,7 +132,7 @@ export class LoansService {
                 console.log('investorTotalAmount', investorTotalAmount);
                 
                 // С какой даты для инвестора начинается начисление (это дата выдачи + 1 день, потом по каждому периоду идет добавление дней периода)
-                const psiDate = new Date(dayAfterIssue.getTime());
+                let psiDate = new Date(dayAfterIssue.getTime());
                 
                 // сколько тело займа возвращается в период
                 // const investorLoanPart = parseFloat((Math.round(investorTotalAmount) / timesCount).toFixed(2));
@@ -175,6 +175,7 @@ export class LoansService {
                         psi_amount = calcPlus(psi_amount, investorLoanPartLeft).toString();
                         
                         // устанавливаем так: дата предыдущего периода + остаток дней
+                        psiDate = new Date(previousPsiDate.getTime());
                         psiDate.setDate(previousPsiDate.getDate() + daysLeft);
                         
                         // т.к. последний период может по дням отличаться от других, то и расчет % может отличаться
@@ -187,7 +188,7 @@ export class LoansService {
                         }
                     }
                     
-                    console.log('psiDate', psiDate);
+                    console.log('psiDate', psiDate, 'previousPsiDate', previousPsiDate);
                     console.log('psi_amount', psi_amount);
                     console.log('psi_income', psi_income);
                     
