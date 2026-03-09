@@ -35,6 +35,12 @@ export class Investment extends Model<Investment> {
   investment_state: boolean;
 
   @Column({
+    type: DataType.DECIMAL(30, 2),
+    comment: 'SUM по колонке investment_amount с группировкой по investor_id, investment_strategy'
+  })
+  total_amount: number;
+
+  @Column({
     type: DataType.DECIMAL(5, 2),
   })
   investment_strategy: number;
