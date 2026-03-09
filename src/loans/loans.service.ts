@@ -7,7 +7,7 @@ import { Investment } from '../investments/investment.model';
 import { PaymentScheduleLoan } from '../payment_schedule_loans/payment-schedule-loan.model';
 import { PaymentScheduleInvestor } from '../payment_schedule_investors/payment-schedule-investor.model';
 
-import { calcDecimalToFixed2, calcDiv, calcDivToFixed2, calcMin, calcMul } from '@helpers/calculations';
+import { calcDecimalToFixed2, calcDiv, calcDivToFixed2, calcMin, calcMul, calcPlus } from '@helpers/calculations';
 import Decimal from 'decimal.js';
 
 @Injectable()
@@ -163,19 +163,28 @@ export class LoansService {
                     
                     // сколько дохода % по стратегии на период выплаты по инвестору (только если % стратегии больше чем ставка % по займу)
                     let psi_income_strategy = 0;
+                    let diffStrategyPercent = calcMin(investmentStrategy, loanRate);
                     
                     if (investmentStrategy > loanRate) {
                         // psi_income_strategy = ((investmentStrategy - loanRate) / 365) * loanPayPeriod * investorTotalAmount;
-                        let diffStrategyPercent = calcMin(investmentStrategy, loanRate);
                         psi_income_strategy = +calcMul(investorTotalAmount, calcMul(loanPayPeriod, calcDiv(diffStrategyPercent, 365)));
                     }
                     
                     if (period + 1 === timesCount) {
                         // в последний месяц закидываем в тело займа то, что остается (сумма за период + остаток)
-                        psi_amount += investorLoanPartLeft;
+                        psi_amount = calcPlus(psi_amount, investorLoanPartLeft).toString();
                         
                         // устанавливаем так: дата предыдущего периода + остаток дней
                         psiDate.setDate(previousPsiDate.getDate() + daysLeft);
+                        
+                        // т.к. последний период может по дням отличаться от других, то и расчет % может отличаться
+                        psi_income = calcMul(investorTotalAmount, calcMul(daysLeft, calcDiv(loanRate, 365)));
+                        psi_income = calcDecimalToFixed2(psi_income);
+                        
+                        if (psi_income_strategy > 0) {
+                            // комиссия стратегии была посчитана, и для последнего периода также надо пересчитать, в зависимости от кол-ва дней в последнем периоде
+                            psi_income_strategy = +calcMul(investorTotalAmount, calcMul(loanRate, calcDiv(diffStrategyPercent, 365)));
+                        }
                     }
                     
                     console.log('psiDate', psiDate);
@@ -195,8 +204,8 @@ export class LoansService {
                         psLoanSums[period] = { amount: 0, income: 0, date: new Date(psiDate.getTime()) };
                     }
                     
-                    psLoanSums[period].income += psi_income;
-                    psLoanSums[period].amount += psi_amount;
+                    psLoanSums[period].income = calcPlus(psLoanSums[period].income, psi_income);
+                    psLoanSums[period].amount = calcPlus(psLoanSums[period].amount, psi_amount);
                 }
                 // break;
             }
@@ -216,7 +225,7 @@ export class LoansService {
             result.status = true;
         }
         catch (err) {
-        
+            console.error(err.message, err.stack);
         }
         finally {
         
