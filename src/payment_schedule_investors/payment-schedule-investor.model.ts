@@ -6,57 +6,85 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
+import type { Optional } from 'sequelize';
 import { Loan } from '../loans/loan.model';
+
+export interface PaymentScheduleInvestorAttributes {
+  psi_id: number;
+  loan_id: string | null;
+  investor_id: string | null;
+  psi_date_pay: Date | null;
+  psi_amount: number | string | null;
+  psi_income: number | string | null;
+  psi_income_strategy: number | string | null;
+}
+
+export type PaymentScheduleInvestorCreationAttributes = Optional<
+  PaymentScheduleInvestorAttributes,
+  | 'psi_id'
+  | 'loan_id'
+  | 'investor_id'
+  | 'psi_date_pay'
+  | 'psi_amount'
+  | 'psi_income'
+  | 'psi_income_strategy'
+>;
 
 @Table({
   tableName: 'payment_schedule_investors',
   timestamps: false,
 })
-export class PaymentScheduleInvestor extends Model<PaymentScheduleInvestor> {
+export class PaymentScheduleInvestor
+  extends Model<
+    PaymentScheduleInvestorAttributes,
+    PaymentScheduleInvestorCreationAttributes
+  >
+  implements PaymentScheduleInvestorAttributes
+{
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   })
-  psi_id: number;
+  declare psi_id: number;
 
   @ForeignKey(() => Loan)
   @Column({
     type: DataType.UUID,
     allowNull: true,
   })
-  loan_id: string;
+  declare loan_id: string | null;
 
   @Column({
     type: DataType.UUID,
     allowNull: true,
   })
-  investor_id: string;
+  declare investor_id: string | null;
 
   @Column({
     type: DataType.DATEONLY,
     allowNull: true,
   })
-  psi_date_pay: Date;
+  declare psi_date_pay: Date | null;
 
   @Column({
     type: DataType.DECIMAL(30, 2),
     allowNull: true,
   })
-  psi_amount: number;
+  declare psi_amount: number | string | null;
 
   @Column({
     type: DataType.DECIMAL(30, 2),
     allowNull: true,
   })
-  psi_income: number;
+  declare psi_income: number | string | null;
 
   @Column({
     type: DataType.DECIMAL(30, 2),
     allowNull: true,
   })
-  psi_income_strategy: number;
+  declare psi_income_strategy: number | string | null;
 
   @BelongsTo(() => Loan)
-  loan: Loan;
+  declare loan: Loan;
 }
