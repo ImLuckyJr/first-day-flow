@@ -6,6 +6,9 @@ import { Investment } from '../investments/investment.model';
 import { PaymentScheduleLoan } from '../payment_schedule_loans/payment-schedule-loan.model';
 import { PaymentScheduleInvestor } from '../payment_schedule_investors/payment-schedule-investor.model';
 
+import { calcDecimalToFixed2, calcDiv, calcDivToFixed2, calcMin, calcMul } from '@helpers/calculations';
+import Decimal from 'decimal.js';
+
 @Injectable()
 export class LoansService {
     constructor(
